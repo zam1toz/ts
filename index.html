@@ -74,7 +74,7 @@
 <body>
 
 <div class="container">
-    <h2>하이패스 사용내역 일괄 추출 (JPG 저장)</h2>
+    <h2>하이패스 사용내역 일괄 추출 (사용자 정의 파일명)</h2>
     
     <div class="control-panel">
         <div>
@@ -168,9 +168,13 @@
 
             const amount = Number(row[9].replace(/[^0-9]/g, '')).toLocaleString();
             const billDate = row[10] ? row[10].replace(/"/g, '').trim().replace(/-/g, '/') : '';
+            
+            // [추가] CSV의 마지막 열(12번째 열 등)에 파일명이 있다고 가정
+            // 화면에는 보여주지 않지만 data-filename 속성에 저장해둠
+            const customFilename = row[11] ? row[11].replace(/"/g, '').trim() : `하이패스_${no}`;
 
             html += `
-                <tr id="row-tr-${i}">
+                <tr id="row-tr-${i}" data-filename="${customFilename}">
                     <td><input type="checkbox"></td>
                     <td class="td-num">${no}</td>
                     <td class="td-date"><strong>${datePart}</strong>${timePart}</td>
@@ -205,7 +209,10 @@
                 break;
             }
             this.innerText = `저장 중 (${i + 1}/${rows.length})...`;
-            await saveRowAsImage(rows[i], rows[i].cells[1].innerText);
+            
+            // tr에 숨겨둔 파일명을 읽어옴
+            const fileName = rows[i].getAttribute('data-filename');
+            await saveRowAsImage(rows[i], fileName);
         }
 
         this.disabled = false;
@@ -219,7 +226,7 @@
         this.innerText = "중단 중...";
     });
 
-    async function saveRowAsImage(el, no) {
+    async function saveRowAsImage(el, fileName) {
         await new Promise(res => setTimeout(res, 100));
         return html2canvas(el, { 
             backgroundColor: "#ffffff", 
@@ -232,8 +239,8 @@
             logging: false 
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `하이패스_${no}.jpg`; // 확장자 변경
-            link.href = canvas.toDataURL('image/jpeg', 0.9); // 형식 jpeg, 품질 0.9 설정
+            link.download = `${fileName}.jpg`; // 커스텀 파일명 사용
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.click();
             return new Promise(res => setTimeout(res, 500));
         });
