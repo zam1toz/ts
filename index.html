@@ -57,7 +57,6 @@
         .icon-search-wrapper { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
         .icon-search-wrapper svg { width: 20px; height: 20px; }
 
-        /* 안내 문구 스타일: 두 줄 정렬 및 강조 */
         .info-box-important {
             text-align: right;
             margin-bottom: 15px;
@@ -75,7 +74,7 @@
 <body>
 
 <div class="container">
-    <h2>하이패스 사용내역 일괄 추출</h2>
+    <h2>하이패스 사용내역 일괄 추출 (JPG 저장)</h2>
     
     <div class="control-panel">
         <div>
@@ -91,7 +90,7 @@
 
     <div class="info-box-important">
         <span class="info-text-important">※ 브라우저(크롬) 설정-다운로드-다운로드전에 각 파일의 저장 위치 확인 반드시 해제후 이미지 저장할것</span>
-        <span class="info-text-important">※ 여러 파일 다운로드 권한 요청시 허용 할것</span>
+        <span class="info-text-important">※ 여러 파일 다운로드 권한 요청시 허용 할것 (이미지는 JPG로 저장됩니다)</span>
     </div>
     
     <table class="cm_table01">
@@ -233,8 +232,8 @@
             logging: false 
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `하이패스_${no}.png`;
-            link.href = canvas.toDataURL('image/png');
+            link.download = `하이패스_${no}.jpg`; // 확장자 변경
+            link.href = canvas.toDataURL('image/jpeg', 0.9); // 형식 jpeg, 품질 0.9 설정
             link.click();
             return new Promise(res => setTimeout(res, 500));
         });
